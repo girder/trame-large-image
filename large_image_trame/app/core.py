@@ -8,7 +8,6 @@ from trame.widgets import vuetify, vtk
 from large_image_trame.widgets import large_image_trame as my_widgets
 
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -54,13 +53,12 @@ class Engine:
     @property
     def ctrl(self):
         return self.server.controller
-    
+
     def show_in_jupyter(self, **kwargs):
         from trame.app import jupyter
-        
+
         logger.setLevel(logging.WARNING)
         jupyter.show(self._server, **kwargs)
-
 
     def reset_resolution(self):
         self._server.state.resolution = 6
@@ -80,17 +78,22 @@ class Engine:
             layout.title.set_text("Trame / vtk.js")
             with layout.toolbar:
                 vuetify.VSpacer()
-                my_widgets.CustomWidget(
+                my_widgets.GeoJSViewer(
                     attribute_name="Hello",
                     py_attr_name="World",
                     click=self.ctrl.widget_click,
                     change=self.ctrl.widget_change,
                 )
                 vuetify.VSpacer()
-                vuetify.VSlider(                    # Add slider
-                    v_model=("resolution", 6),      # bind variable with an initial value of 6
-                    min=3, max=60,                  # slider range
-                    dense=True, hide_details=True,  # presentation setup
+                vuetify.VSlider(  # Add slider
+                    v_model=(
+                        "resolution",
+                        6,
+                    ),  # bind variable with an initial value of 6
+                    min=3,
+                    max=60,  # slider range
+                    dense=True,
+                    hide_details=True,  # presentation setup
                 )
                 with vuetify.VBtn(icon=True, click=self.ctrl.reset_camera):
                     vuetify.VIcon("mdi-crop-free")
@@ -100,12 +103,16 @@ class Engine:
             # Main content
             with layout.content:
                 with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
-                    with vtk.VtkView() as vtk_view:                # vtk.js view for local rendering
-                        self.ctrl.reset_camera = vtk_view.reset_camera  # Bind method to controller
-                        with vtk.VtkGeometryRepresentation():      # Add representation to vtk.js view
-                            vtk.VtkAlgorithm(                      # Add ConeSource to representation
-                                vtk_class="vtkConeSource",          # Set attribute value with no JS eval
-                                state=("{ resolution }",)          # Set attribute value with JS eval
+                    with vtk.VtkView() as vtk_view:  # vtk.js view for local rendering
+                        self.ctrl.reset_camera = (
+                            vtk_view.reset_camera
+                        )  # Bind method to controller
+                        with vtk.VtkGeometryRepresentation():  # Add representation to vtk.js view
+                            vtk.VtkAlgorithm(  # Add ConeSource to representation
+                                vtk_class="vtkConeSource",  # Set attribute value with no JS eval
+                                state=(
+                                    "{ resolution }",
+                                ),  # Set attribute value with JS eval
                             )
 
             # Footer

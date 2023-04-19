@@ -12,5 +12,5 @@ npm run build
 ## Develop component live
 
 ```bash
-npm run serve:CustomWidget
+npm run serve:GeoJSViewer
 ```

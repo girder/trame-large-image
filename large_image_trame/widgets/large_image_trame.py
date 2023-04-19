@@ -10,10 +10,10 @@ class HtmlElement(AbstractElement):
 
 
 # Expose your vue component(s)
-class CustomWidget(HtmlElement):
+class GeoJSViewer(HtmlElement):
     def __init__(self, **kwargs):
         super().__init__(
-            "your-custom-widget",
+            "geo-js-viewer",
             **kwargs,
         )
         self._attr_names += [
