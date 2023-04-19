@@ -1,0 +1,6 @@
+trame: # Default app under /index.html
+  www_modules:
+    - large_image_trame.module
+  app: large-image-trame
+large-image-trame: # /large-image-trame.html
+  app: large-image-trame
