@@ -1,45 +1,32 @@
-import axios from 'axios';
 import geo from 'geojs';
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
   props: {
-    apiRoot: {
+    tileURL: {
       type: String,
       required: true,
     },
-    itemID: {
+    metadata: {
       type: String,
       required: true,
     },
   },
   setup(props) {
     const view = ref(null);
-    const itemTileMetadata = ref();
-    const tileUrl = `${props.apiRoot}/item/${props.itemID}/tiles/zxy/{z}/{x}/{y}`;
-    const axiosInstance = axios.create({
-      baseURL: props.apiRoot,
-    });
-
-    async function getTileMetadata() {
-      const resp = await axiosInstance.get('item/' + props.itemID + '/tiles');
-      if (resp.status === 200) {
-        itemTileMetadata.value = resp.data;
-      }
-    }
+    const metadata = JSON.parse(props.metadata.replaceAll("'", '"'));
 
     function createViewer() {
-      if (!itemTileMetadata.value) return;
       const { map, layer } = geo.util.pixelCoordinateParams(
         view.value,
-        itemTileMetadata.value.sizeX,
-        itemTileMetadata.value.sizeY,
-        itemTileMetadata.value.tileWidth,
-        itemTileMetadata.value.tileHeight
+        metadata.sizeX,
+        metadata.sizeY,
+        metadata.tileWidth,
+        metadata.tileHeight
       );
       const layerParams = {
         ...layer,
-        url: tileUrl,
+        url: props.tileURL,
       };
       view.value = geo.map({
         node: view.value,
@@ -50,11 +37,10 @@ export default defineComponent({
 
     return {
       view,
-      getTileMetadata,
       createViewer,
     };
   },
   mounted() {
-    this.getTileMetadata().then(this.createViewer);
+    this.createViewer();
   },
 });

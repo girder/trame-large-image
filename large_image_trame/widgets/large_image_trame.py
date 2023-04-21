@@ -17,10 +17,10 @@ class GeoJSViewer(HtmlElement):
             **kwargs,
         )
         self._attr_names += [
-            "attribute_name",
-            ("py_attr_name", "js_attr_name"),
+            ("tile_url", "tileURL"),
+            "metadata",
         ]
-        self._event_names += [
-            "click",
-            "change",
-        ]
+        # self._event_names += [
+        #     "click",
+        #     "change",
+        # ]

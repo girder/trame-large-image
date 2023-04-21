@@ -9,8 +9,14 @@ export default {
   data() {
     // This test assumes a tile server with this item is available and running
     return {
-      apiRoot: 'http://localhost:8080/api/v1',
-      itemID: '641c68e18076e407876e8c38',
+      tileURL: 'http://localhost:3333/tile/{z}/{x}/{y}.png',
+      metadata: {
+        levels: 8,
+        sizeX: 20000,
+        sizeY: 12000,
+        tileWidth: 256,
+        tileHeight: 256,
+      },
     };
   },
 };
@@ -19,7 +25,7 @@ export default {
 <template>
   <div id="app">
     <v-app>
-      <GeoJSViewer :apiRoot="apiRoot" :itemID="itemID" />
+      <GeoJSViewer :tileURL="tileURL" :metadata="JSON.stringify(metadata)" />
     </v-app>
   </div>
 </template>

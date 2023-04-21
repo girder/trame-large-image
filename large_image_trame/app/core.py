@@ -2,10 +2,15 @@ r"""
 Define your classes and create the instances that you need to expose
 """
 import logging
+import large_image
+import json
+
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageLayout
-from trame.widgets import vuetify, vtk
+from trame.widgets import vuetify
 from large_image_trame.widgets import large_image_trame as my_widgets
+
+from .tile_server import get_server as get_tile_server
 
 
 logger = logging.getLogger(__name__)
@@ -24,20 +29,25 @@ class Engine:
         self._server = server
 
         # initialize state + controller
-        state, ctrl = server.state, server.controller
+        state = server.state
+        # ctrl =  server.controller
 
         # Set state variable
         state.trame__title = "Large Image Trame"
-        state.resolution = 6
+
+        self.image = large_image.open("large_image_trame/data/multi_all.yml")
+        self.tile_server = get_tile_server(self.image)
+        # props cannot be sent as dict and cannot contain double-quotes
+        state.metadata = json.dumps(self.image.getMetadata()).replace('"', "'")
 
         # Bind instance methods to controller
-        ctrl.reset_resolution = self.reset_resolution
-        ctrl.on_server_reload = self.ui
-        ctrl.widget_click = self.widget_click
-        ctrl.widget_change = self.widget_change
+        # ctrl.reset_resolution = self.reset_resolution
+        # ctrl.on_server_reload = self.ui
+        # ctrl.widget_click = self.widget_click
+        # ctrl.widget_change = self.widget_change
 
         # Bind instance methods to state change
-        state.change("resolution")(self.on_resolution_change)
+        # state.change("resolution")(self.on_resolution_change)
 
         # Generate UI
         self.ui()
@@ -60,60 +70,18 @@ class Engine:
         logger.setLevel(logging.WARNING)
         jupyter.show(self._server, **kwargs)
 
-    def reset_resolution(self):
-        self._server.state.resolution = 6
-
-    def on_resolution_change(self, resolution, **kwargs):
-        logger.info(f">>> ENGINE(a): Slider updating resolution to {resolution}")
-
-    def widget_click(self):
-        logger.info(">>> ENGINE(a): Widget Click")
-
-    def widget_change(self):
-        logger.info(">>> ENGINE(a): Widget Change")
-
     def ui(self, *args, **kwargs):
         with SinglePageLayout(self._server) as layout:
             # Toolbar
-            layout.title.set_text("Trame / vtk.js")
-            with layout.toolbar:
-                vuetify.VSpacer()
-                my_widgets.GeoJSViewer(
-                    attribute_name="Hello",
-                    py_attr_name="World",
-                    click=self.ctrl.widget_click,
-                    change=self.ctrl.widget_change,
-                )
-                vuetify.VSpacer()
-                vuetify.VSlider(  # Add slider
-                    v_model=(
-                        "resolution",
-                        6,
-                    ),  # bind variable with an initial value of 6
-                    min=3,
-                    max=60,  # slider range
-                    dense=True,
-                    hide_details=True,  # presentation setup
-                )
-                with vuetify.VBtn(icon=True, click=self.ctrl.reset_camera):
-                    vuetify.VIcon("mdi-crop-free")
-                with vuetify.VBtn(icon=True, click=self.ctrl.reset_resolution):
-                    vuetify.VIcon("mdi-undo")
+            layout.title.set_text("Trame")
 
             # Main content
             with layout.content:
                 with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
-                    with vtk.VtkView() as vtk_view:  # vtk.js view for local rendering
-                        self.ctrl.reset_camera = (
-                            vtk_view.reset_camera
-                        )  # Bind method to controller
-                        with vtk.VtkGeometryRepresentation():  # Add representation to vtk.js view
-                            vtk.VtkAlgorithm(  # Add ConeSource to representation
-                                vtk_class="vtkConeSource",  # Set attribute value with no JS eval
-                                state=(
-                                    "{ resolution }",
-                                ),  # Set attribute value with JS eval
-                            )
+                    my_widgets.GeoJSViewer(
+                        tile_url="http://localhost:3333/tile/{z}/{x}/{y}.png",
+                        metadata=self.state.metadata,
+                    )
 
             # Footer
-            # layout.footer.hide()
+            layout.footer.hide()
