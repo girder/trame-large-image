@@ -1,0 +1,21 @@
+---
+axes: ["a","b","c","d"]
+scale:
+  mm_x: 0.0005
+  mm_y: 0.0005
+  magnification: 20
+channels: ["DAPI", "CD20", "A594", "YFP"]
+sources:
+  - sourceName: test
+    path: __none__
+    params:
+      tileWidth: 256
+      tileHeight: 256
+      sizeX: 20000
+      sizeY: 12000
+      fractal: True
+      # c,z,t,xy OR frames OR <axis>=<count>,<axis>=<count>,...
+      frames: "c=4,z=5,a=2,b=3,d=6"
+      monochrome: False
+      # multiband
+      bands: "red=400-12000,green=0-65535,blue=800-4000,ir1=200-24000,ir2=200-22000,grey=100-10000,other=0-65535"

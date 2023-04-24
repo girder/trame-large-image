@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "dependencies": {
     "core-js": "^3.6.5",
-    "vue": "2.6.11"
+    "vue": "^2.7",
+    "geojs": "^1.4.3"
   },
   "scripts": {
-    "serve:CustomWidget": "vue-cli-service serve src/tests/CustomWidget/main.js",
+    "serve:GeoJSViewer": "vue-cli-service serve --port 3000 src/tests/GeoJSViewer/main.js",
     "build": "vue-cli-service build --target lib --name large_image_trame --filename vue-large_image_trame src/use.js",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "format": "npx prettier --write src//**/*.{js,jsx,ts,json}"
   },
   "devDependencies": {
     "@mdi/font": "^6.3.95",
@@ -30,6 +32,7 @@
     "dist/*",
     "src/*",
     "*.json",
-    "*.js"
+    "*.js",
+    "*.ts"
   ]
 }

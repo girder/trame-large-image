@@ -1,5 +1,5 @@
-import CustomWidget from './CustomWidget';
+import GeoJsViewer from './GeoJSViewer'
 
 export default {
-  'yourCustomWidget':CustomWidget,
-};
+  GeoJsViewer
+}
