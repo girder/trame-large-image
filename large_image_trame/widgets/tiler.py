@@ -21,6 +21,7 @@ class Tiler:
 
     def routes(self):
         return [
+            # TODO: make routes unique to image instance (ID)
             web.get("/metadata", self.metadata),
             web.get("/tile/{z}/{x}/{y}.png", self.tile),
         ]

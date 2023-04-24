@@ -7,10 +7,8 @@ import json
 
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageLayout
-from trame.widgets import vuetify
+from trame.widgets import leaflet, vuetify
 from large_image_trame.widgets import large_image_trame as my_widgets
-
-from .tiler import Tiler
 
 
 logger = logging.getLogger(__name__)
@@ -35,8 +33,8 @@ class Engine:
         # Set state variable
         state.trame__title = "Large Image Trame"
 
-        self.image = large_image.open("large_image_trame/data/multi_all.yml")
-        self.tiler = Tiler(self.image)
+        # self.image = large_image.open("large_image_trame/data/multi_all.yml")
+        self.image = large_image.open("/data/rasters/TC_NG_SFBay_US_Geo.tif")
         # props cannot be sent as dict and cannot contain double-quotes
         state.metadata = json.dumps(self.image.getMetadata()).replace('"', "'")
 
@@ -48,11 +46,6 @@ class Engine:
 
         # Bind instance methods to state change
         # state.change("resolution")(self.on_resolution_change)
-
-        @server.controller.add("on_server_bind")
-        def app_available(wslink_server):
-            """Add our custom REST endpoints to the trame server."""
-            wslink_server.app.add_routes(self.tiler.routes())
 
         # Generate UI
         self.ui()
@@ -83,10 +76,12 @@ class Engine:
             # Main content
             with layout.content:
                 with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
-                    my_widgets.GeoJSViewer(
-                        tile_url="/tile/{z}/{x}/{y}.png",
-                        metadata=self.state.metadata,
-                    )
+                    # my_widgets.GeoJSViewer(
+                    #     tile_url="/tile/{z}/{x}/{y}.png",
+                    #     metadata=self.state.metadata,
+                    # )
+                    with leaflet.LMap(zoom=("zoom", 9),):
+                        my_widgets.LargeImageLTileLayer(self.image)
 
             # Footer
             layout.footer.hide()

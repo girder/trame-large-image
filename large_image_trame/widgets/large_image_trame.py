@@ -1,4 +1,7 @@
+from trame.widgets import leaflet
 from trame_client.widgets.core import AbstractElement
+
+from .tiler import Tiler
 from .. import module
 
 
@@ -24,3 +27,14 @@ class GeoJSViewer(HtmlElement):
         #     "click",
         #     "change",
         # ]
+
+
+class LargeImageLTileLayer(leaflet.LTileLayer):
+    def __init__(self, tile_source, **kwargs):
+        super().__init__(**kwargs)
+        self.tiler = Tiler(tile_source)
+
+        @self._server.controller.add("on_server_bind")
+        def app_available(wslink_server):
+            """Add our custom REST endpoints to the trame server."""
+            wslink_server.app.add_routes(self.tiler.routes())
