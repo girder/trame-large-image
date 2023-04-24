@@ -9,7 +9,7 @@ export default {
   data() {
     // This test assumes a tile server with this item is available and running
     return {
-      tileURL: 'http://localhost:3333/tile/{z}/{x}/{y}.png',
+      tileURL: '/tile/{z}/{x}/{y}.png',
       metadata: {
         levels: 8,
         sizeX: 20000,
