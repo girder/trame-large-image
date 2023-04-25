@@ -1,4 +1,4 @@
-# Large Image Trame
+# Large Image Handling for Trame
 
 *Large image viewer for Trame*
 
