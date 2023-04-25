@@ -3,7 +3,7 @@ import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
   props: {
-    tileURL: {
+    tileSourceKey: {
       type: String,
       required: true,
     },
@@ -26,7 +26,7 @@ export default defineComponent({
       );
       const layerParams = {
         ...layer,
-        url: props.tileURL,
+        url: `/large-image/${props.tileSourceKey}/tile/{z}/{x}/{y}.png`,
       };
       view.value = geo.map({
         node: view.value,

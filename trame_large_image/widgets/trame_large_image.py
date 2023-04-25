@@ -4,7 +4,7 @@ from trame.widgets import leaflet
 from trame_client.widgets.core import AbstractElement
 
 from .. import module
-from ..module.manager import add_routes, get_tile_url
+from ..module.manager import add_routes, register
 
 
 def bounds(source, srs="EPSG:4326"):
@@ -32,14 +32,15 @@ class GeoJSViewer(HtmlElement):
     def __init__(self, tile_source, **kwargs):
         super().__init__(
             "geo-js-viewer",
-            tile_url=get_tile_url(tile_source),
+            tile_source_key=register(tile_source),
             metadata=json.dumps(tile_source.getMetadata()).replace('"', "'"),
             **kwargs,
         )
         self._attr_names += [
-            ("tile_url", "tileURL"),
+            ("tile_source_key", "tileSourceKey"),
             "metadata",
         ]
+
         # self._event_names += [
         #     "click",
         #     "change",
@@ -48,8 +49,20 @@ class GeoJSViewer(HtmlElement):
 
 class LargeImageLeafletTileLayer(leaflet.LTileLayer):
     def __init__(self, tile_source, **kwargs):
-        super().__init__(url=("tile_url", get_tile_url(tile_source)), **kwargs)
+        tile_source_key = register(tile_source)
+        super().__init__(
+            url=(
+                "tile_url",
+                f"/large-image/{tile_source_key}/tile/{{z}}/{{x}}/{{y}}.png",
+            ),
+            tile_source_key=tile_source_key,
+            **kwargs,
+        )
         add_routes(self.server)
+
+        self._attr_names += [
+            ("tile_source_key", "tileSourceKey"),
+        ]
 
 
 class LargeImageLeafletMap(leaflet.LMap):
