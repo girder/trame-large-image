@@ -1,2 +1,2 @@
 def test_import():
-    from large_image_trame.widgets import GeoJSViewer  # noqa: F401
+    from trame_large_image.widgets import GeoJSViewer  # noqa: F401

@@ -26,11 +26,13 @@ Install the application
     pip install -e .
 
 
-Run the application
+Run the examples
 
 .. code-block:: console
 
-    large-image-trame
+    python examples/standard.py
+
+    python examples/geospatial.py
 
 Features
 --------

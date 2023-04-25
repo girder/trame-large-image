@@ -1,5 +1,5 @@
 const path = require('path');
-const DST_PATH = '../large_image_trame/module/serve';
+const DST_PATH = '../trame_large_image/module/serve';
 
 module.exports = {
   outputDir: path.resolve(__dirname, DST_PATH),

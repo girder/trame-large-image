@@ -1,4 +1,4 @@
-from .large_image_trame import (
+from .trame_large_image import (
     GeoJSViewer,
     LargeImageLeafletMap,
     LargeImageLeafletTileLayer,

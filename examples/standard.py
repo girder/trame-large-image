@@ -3,7 +3,7 @@ from trame.app import get_server
 from trame.ui.vuetify import SinglePageLayout
 from trame.widgets import vuetify
 
-from large_image_trame.widgets import large_image_trame
+from trame_large_image.widgets import trame_large_image
 
 server = get_server()
 state, ctrl = server.state, server.controller
@@ -20,7 +20,7 @@ with SinglePageLayout(server) as layout:
     # Main content
     with layout.content:
         with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
-            large_image_trame.GeoJSViewer(
+            trame_large_image.GeoJSViewer(
                 tile_source=source,
             )
 

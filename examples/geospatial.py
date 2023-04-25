@@ -3,7 +3,7 @@ from trame.app import get_server
 from trame.ui.vuetify import SinglePageLayout
 from trame.widgets import leaflet, vuetify
 
-from large_image_trame.widgets import LargeImageLeafletMap, LargeImageLeafletTileLayer
+from trame_large_image.widgets import LargeImageLeafletMap, LargeImageLeafletTileLayer
 
 server = get_server()
 state, ctrl = server.state, server.controller
@@ -12,7 +12,7 @@ state.trame__title = "Geospatial Large Image Viewer"
 
 
 source = large_image.open(
-    "landcover_sample_1000.tif",
+    "examples/landcover_sample_1000.tif",
     projection="EPSG:3857",
     encoding="PNG",
 )

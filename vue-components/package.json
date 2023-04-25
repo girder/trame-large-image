@@ -1,5 +1,5 @@
 {
-  "name": "vue-large_image_trame",
+  "name": "vue-trame_large_image",
   "private": true,
   "version": "0.0.0",
   "dependencies": {
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "serve:GeoJSViewer": "vue-cli-service serve --port 3000 src/tests/GeoJSViewer/main.js",
-    "build": "vue-cli-service build --target lib --name large_image_trame --filename vue-large_image_trame src/use.js",
+    "build": "vue-cli-service build --target lib --name trame_large_image --filename vue-trame_large_image src/use.js",
     "lint": "vue-cli-service lint",
     "format": "npx prettier --write src//**/*.{js,jsx,ts,json}"
   },
