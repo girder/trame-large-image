@@ -67,12 +67,6 @@ class Engine:
     def ctrl(self):
         return self.server.controller
 
-    def show_in_jupyter(self, **kwargs):
-        from trame.app import jupyter
-
-        logger.setLevel(logging.WARNING)
-        jupyter.show(self._server, **kwargs)
-
     def ui(self, *args, **kwargs):
         with SinglePageLayout(self._server) as layout:
             # Toolbar
