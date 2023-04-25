@@ -3,8 +3,8 @@ import json
 from trame.widgets import leaflet
 from trame_client.widgets.core import AbstractElement
 
-from ..module.tiler import Tiler
 from .. import module
+from ..module.tiler import Tiler
 
 
 def bounds(source, srs="EPSG:4326"):
