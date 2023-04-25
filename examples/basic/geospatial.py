@@ -12,7 +12,7 @@ state.trame__title = "Geospatial Large Image Viewer"
 
 
 source = large_image.open(
-    "examples/landcover_sample_1000.tif",
+    "data/landcover_sample_1000.tif",
     projection="EPSG:3857",
     encoding="PNG",
 )

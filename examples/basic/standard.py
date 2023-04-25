@@ -11,7 +11,7 @@ state, ctrl = server.state, server.controller
 state.trame__title = "Standard Large Image Viewer"
 
 
-source = large_image.open("examples/multi_all.yml")
+source = large_image.open("data/multi_all.yml")
 
 
 with SinglePageLayout(server) as layout:

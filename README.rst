@@ -30,9 +30,9 @@ Run the examples
 
 .. code-block:: console
 
-    python examples/standard.py
+    python examples/basic/standard.py
 
-    python examples/geospatial.py
+    python examples/basic/geospatial.py
 
 Features
 --------
