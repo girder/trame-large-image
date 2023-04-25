@@ -33,8 +33,13 @@ class Engine:
         # Set state variable
         state.trame__title = "Large Image Trame"
 
-        # self.image = large_image.open("large_image_trame/data/multi_all.yml")
-        self.image = large_image.open("/data/rasters/TC_NG_SFBay_US_Geo.tif")
+        self.image = large_image.open("large_image_trame/data/multi_all.yml")
+        # self.image = large_image.open(
+        #     "/data/rasters/TC_NG_SFBay_US_Geo.tif",
+        #     projection="EPSG:3857",
+        #     encoding="PNG",
+        # )
+
         # props cannot be sent as dict and cannot contain double-quotes
         state.metadata = json.dumps(self.image.getMetadata()).replace('"', "'")
 
@@ -76,12 +81,22 @@ class Engine:
             # Main content
             with layout.content:
                 with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
-                    # my_widgets.GeoJSViewer(
-                    #     tile_url="/tile/{z}/{x}/{y}.png",
-                    #     metadata=self.state.metadata,
-                    # )
-                    with leaflet.LMap(zoom=("zoom", 9),):
-                        my_widgets.LargeImageLTileLayer(self.image)
+                    my_widgets.GeoJSViewer(
+                        tile_source=self.image,
+                    )
+
+                    # with my_widgets.LargeImageLeafletMap(tile_source=self.image):
+                    #     leaflet.LTileLayer(
+                    #         url=(
+                    #             "basemap_url",
+                    #             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    #         ),
+                    #         attribution=(
+                    #             "attribution",
+                    #             '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+                    #         ),
+                    #     )
+                    #     my_widgets.LargeImageLeafletTileLayer(self.image)
 
             # Footer
             layout.footer.hide()

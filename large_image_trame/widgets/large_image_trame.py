@@ -1,8 +1,29 @@
+import json
+
 from trame.widgets import leaflet
 from trame_client.widgets.core import AbstractElement
 
-from .tiler import Tiler
+from ..module.tiler import Tiler
 from .. import module
+
+
+def bounds(source, srs="EPSG:4326"):
+    return source.getBounds(srs=srs)
+
+
+def center(source, srs="EPSG:4326"):
+    bnds = bounds(source, srs=srs)
+    return (
+        (bnds["ymax"] - bnds["ymin"]) / 2 + bnds["ymin"],
+        (bnds["xmax"] - bnds["xmin"]) / 2 + bnds["xmin"],
+    )
+
+
+def _post_init_register_routes(instance, routes):
+    @instance._server.controller.add("on_server_bind")
+    def _(wslink_server):
+        """Add our custom REST endpoints to the trame server."""
+        wslink_server.app.add_routes(routes)
 
 
 class HtmlElement(AbstractElement):
@@ -14,9 +35,13 @@ class HtmlElement(AbstractElement):
 
 # Expose your vue component(s)
 class GeoJSViewer(HtmlElement):
-    def __init__(self, **kwargs):
+    def __init__(self, tile_source, **kwargs):
+        self._tiler = Tiler(tile_source)
+
         super().__init__(
             "geo-js-viewer",
+            tile_url=self._tiler.tile_url,
+            metadata=json.dumps(tile_source.getMetadata()).replace('"', "'"),
             **kwargs,
         )
         self._attr_names += [
@@ -28,13 +53,25 @@ class GeoJSViewer(HtmlElement):
         #     "change",
         # ]
 
+        _post_init_register_routes(self, self._tiler.routes)
 
-class LargeImageLTileLayer(leaflet.LTileLayer):
+
+class LargeImageLeafletTileLayer(leaflet.LTileLayer):
     def __init__(self, tile_source, **kwargs):
-        super().__init__(**kwargs)
-        self.tiler = Tiler(tile_source)
+        self._tiler = Tiler(tile_source)
 
-        @self._server.controller.add("on_server_bind")
-        def app_available(wslink_server):
-            """Add our custom REST endpoints to the trame server."""
-            wslink_server.app.add_routes(self.tiler.routes())
+        super().__init__(url=("tile_url", self._tiler.tile_url), **kwargs)
+
+        _post_init_register_routes(self, self._tiler.routes)
+
+
+class LargeImageLeafletMap(leaflet.LMap):
+    def __init__(self, tile_source, **kwargs):
+        m = tile_source.getMetadata()
+        try:
+            zoom = m["levels"] - m["sourceLevels"]
+            kwargs.setdefault("center", ("center", center(tile_source)))
+        except KeyError:
+            zoom = 0
+        kwargs.setdefault("zoom", ("zoom", zoom))
+        super().__init__(**kwargs)
