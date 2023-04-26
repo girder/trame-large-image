@@ -26,7 +26,7 @@ export default defineComponent({
       );
       const layerParams = {
         ...layer,
-        url: `/large-image/${props.tileSource}/tile/{z}/{x}/{y}.png`,
+        url: `/large-image/tile/{z}/{x}/{y}.png?tileSource=${props.tileSource}`,
       };
       view.value = geo.map({
         node: view.value,

@@ -1,7 +1,9 @@
 import io
 
 from aiohttp import web
+import large_image
 from large_image.exceptions import TileSourceXYZRangeError
+from large_image.tilesource import TileSource
 from trame.app import get_server
 
 ROOT_API = "large-image"
@@ -24,6 +26,14 @@ class TileSourceManager:
         # TODO: should we weakref?
         TileSourceManager.SOURCES[key] = source
         return key
+
+    @staticmethod
+    def unregister(source):
+        if isinstance(source, TileSource):
+            key = TileSourceManager.get_key(source)
+        else:
+            key = source
+        del TileSourceManager.SOURCES[key]  # TODO
 
     @staticmethod
     def get_key(source):
@@ -49,29 +59,33 @@ class TileSourceManager:
         return f"{TileSourceManager.get_root_url(source)}/{TILE_ENDPOINT}"
 
     @staticmethod
+    def _get_source(request):
+        try:
+            key = request.rel_url.query["tileSource"]
+        except KeyError:
+            raise web.HTTPNotFound(text=str(e))
+
+        try:
+            key = int(key)
+        except ValueError as e:
+            source = large_image.open(key, projection="EPSG:3857", encoding="PNG")
+        else:
+            try:
+                source = TileSourceManager.get_source(key)
+            except KeyError as e:
+                raise web.HTTPNotFound(text=str(e))
+        return source
+
+    @staticmethod
     async def metadata(request):
         """REST endpoint to get image metadata."""
-        try:
-            key = int(request.match_info["key"])
-        except ValueError as e:
-            raise web.HTTPNotFound(text=str(e))
-        try:
-            source = TileSourceManager.get_source(key)
-        except KeyError as e:
-            raise web.HTTPNotFound(text=str(e))
+        source = TileSourceManager._get_source(request)
         return web.json_response(source.getMetadata())
 
     @staticmethod
     async def tile(request):
         """REST endpoint to server tiles from image in ZXY standard."""
-        try:
-            key = int(request.match_info["key"])
-        except ValueError as e:
-            raise web.HTTPNotFound(text=str(e))
-        try:
-            source = TileSourceManager.get_source(key)
-        except KeyError as e:
-            raise web.HTTPNotFound(text=str(e))
+        source = TileSourceManager._get_source(request)
         z = int(request.match_info["z"])
         x = int(request.match_info["x"])
         y = int(request.match_info["y"])
@@ -84,10 +98,8 @@ class TileSourceManager:
     @staticmethod
     def routes():
         return [
-            web.get(
-                f"/{ROOT_API}/{{key}}/{METADATA_ENDPOINT}", TileSourceManager.metadata
-            ),
-            web.get(f"/{ROOT_API}/{{key}}/{TILE_ENDPOINT}", TileSourceManager.tile),
+            web.get(f"/{ROOT_API}/{METADATA_ENDPOINT}", TileSourceManager.metadata),
+            web.get(f"/{ROOT_API}/{TILE_ENDPOINT}", TileSourceManager.tile),
         ]
 
 
@@ -99,6 +111,10 @@ def register(source):
     else:
         key = TileSourceManager.register(source)
     return key
+
+
+def unregister(source):
+    return TileSourceManager.unregister(source)
 
 
 def get_tile_url(source):

@@ -21,7 +21,7 @@ export default defineComponent({
   },
   setup(props) {
     function createLayer() {
-      const url = `/large-image/${props.tileSource}/tile/{z}/{x}/{y}.png`;
+      const url = `/large-image/tile/{z}/{x}/{y}.png?tileSource=${props.tileSource}`;
 
       // TODO: limit request bounds of the tileLayer
       const options = optionsMerger(this.tileLayerOptions, this);
