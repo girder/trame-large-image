@@ -41,28 +41,19 @@ class GeoJSViewer(HtmlElement):
             "metadata",
         ]
 
-        # self._event_names += [
-        #     "click",
-        #     "change",
-        # ]
-
 
 class LargeImageLeafletTileLayer(leaflet.LTileLayer):
     def __init__(self, tile_source, **kwargs):
         tile_source_key = register(tile_source)
+        self._state_key = f"_LILTileLayer_{hash(id(self))}"
+        _fvar = "{" + f"{self._state_key}" + "}"
+        url = f"`/large-image/${_fvar}/tile/{{z}}/{{x}}/{{y}}.png`"
         super().__init__(
-            url=(
-                "tile_url",
-                f"/large-image/{tile_source_key}/tile/{{z}}/{{x}}/{{y}}.png",
-            ),
-            tile_source_key=tile_source_key,
+            url=(url,),
             **kwargs,
         )
+        self.server.state[self._state_key] = tile_source_key
         add_routes(self.server)
-
-        self._attr_names += [
-            ("tile_source_key", "tileSourceKey"),
-        ]
 
 
 class LargeImageLeafletMap(leaflet.LMap):

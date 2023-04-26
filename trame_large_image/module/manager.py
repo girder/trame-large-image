@@ -29,7 +29,8 @@ class TileSourceManager:
     def get_key(source):
         if isinstance(source, int):
             return source
-        return hash(source.getLRUHash(source.getState()))
+        # return hash(source.getLRUHash(source.getState()))
+        return hash(id(source))
 
     @staticmethod
     def get_source(key):
