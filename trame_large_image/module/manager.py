@@ -51,7 +51,10 @@ class TileSourceManager:
     @staticmethod
     async def metadata(request):
         """REST endpoint to get image metadata."""
-        key = int(request.match_info["key"])
+        try:
+            key = int(request.match_info["key"])
+        except ValueError as e:
+            raise web.HTTPNotFound(text=str(e))
         try:
             source = TileSourceManager.get_source(key)
         except KeyError as e:
@@ -61,7 +64,10 @@ class TileSourceManager:
     @staticmethod
     async def tile(request):
         """REST endpoint to server tiles from image in ZXY standard."""
-        key = int(request.match_info["key"])
+        try:
+            key = int(request.match_info["key"])
+        except ValueError as e:
+            raise web.HTTPNotFound(text=str(e))
         try:
             source = TileSourceManager.get_source(key)
         except KeyError as e:

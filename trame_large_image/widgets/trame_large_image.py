@@ -1,5 +1,6 @@
 import json
 
+from large_image.tilesource import TileSource
 from trame.widgets import leaflet
 from trame_client.widgets.core import AbstractElement
 
@@ -27,36 +28,38 @@ class HtmlElement(AbstractElement):
             add_routes(self.server)
 
 
-# Expose your vue component(s)
 class GeoJSViewer(HtmlElement):
     def __init__(self, tile_source, **kwargs):
+        if isinstance(tile_source, TileSource):
+            tile_source = register(tile_source)
         super().__init__(
             "geo-js-viewer",
-            tile_source_key=register(tile_source),
+            tile_source=tile_source,
+            # TODO: support metadata with reference key
             metadata=json.dumps(tile_source.getMetadata()).replace('"', "'"),
             **kwargs,
         )
         self._attr_names += [
-            ("tile_source_key", "tileSourceKey"),
+            ("tile_source", "tileSource"),
             "metadata",
         ]
 
 
-class LargeImageLeafletTileLayer(leaflet.LTileLayer):
+class LargeImageLTileLayer(HtmlElement):
     def __init__(self, tile_source, **kwargs):
-        tile_source_key = register(tile_source)
-        self._state_key = f"_LILTileLayer_{hash(id(self))}"
-        _fvar = "{" + f"{self._state_key}" + "}"
-        url = f"`/large-image/${_fvar}/tile/{{z}}/{{x}}/{{y}}.png`"
+        if isinstance(tile_source, TileSource):
+            tile_source = register(tile_source)
         super().__init__(
-            url=(url,),
+            "large-image-l-tile-layer",
+            tile_source=tile_source,
             **kwargs,
         )
-        self.server.state[self._state_key] = tile_source_key
-        add_routes(self.server)
+        self._attr_names += [
+            ("tile_source", "tileSource"),
+        ]
 
 
-class LargeImageLeafletMap(leaflet.LMap):
+class LargeImageLMap(leaflet.LMap):
     def __init__(self, tile_source, **kwargs):
         m = tile_source.getMetadata()
         try:

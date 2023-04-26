@@ -3,7 +3,7 @@ from trame.app import get_server
 from trame.ui.vuetify import SinglePageLayout
 from trame.widgets import leaflet, vuetify
 
-from trame_large_image.widgets import LargeImageLeafletMap, LargeImageLeafletTileLayer
+from trame_large_image.widgets import LargeImageLMap, LargeImageLTileLayer
 
 server = get_server()
 state, ctrl = server.state, server.controller
@@ -22,10 +22,14 @@ with SinglePageLayout(server) as layout:
     # Toolbar
     layout.title.set_text(state.trame__title)
 
+    with layout.toolbar:
+        # really bump it to be above leaflet tile layer
+        layout.toolbar.style = "z-index: 1000;"
+
     # Main content
     with layout.content:
         with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
-            with LargeImageLeafletMap(tile_source=source):
+            with LargeImageLMap(tile_source=source):
                 leaflet.LTileLayer(
                     url=(
                         "basemap_url",
@@ -36,7 +40,7 @@ with SinglePageLayout(server) as layout:
                         '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
                     ),
                 )
-                LargeImageLeafletTileLayer(tile_source=source)
+                LargeImageLTileLayer(tile_source=source)
 
     # Footer
     layout.footer.hide()

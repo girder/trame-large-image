@@ -4,8 +4,10 @@
   "version": "0.0.0",
   "dependencies": {
     "core-js": "^3.6.5",
+    "geojs": "^1.4.3",
+    "leaflet": "^1.9.3",
     "vue": "^2.7",
-    "geojs": "^1.4.3"
+    "vue2-leaflet": "^2.7.1"
   },
   "scripts": {
     "serve:GeoJSViewer": "vue-cli-service serve --port 3000 src/tests/GeoJSViewer/main.js",
@@ -15,8 +17,6 @@
   },
   "devDependencies": {
     "@mdi/font": "^6.3.95",
-    "typeface-roboto": "^1.1.13",
-    "vuetify": "^2.5.10",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
@@ -26,7 +26,9 @@
     "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-vue": "^6.2.2",
     "prettier": "^1.19.1",
-    "vue-template-compiler": "2.6.11"
+    "typeface-roboto": "^1.1.13",
+    "vue-template-compiler": "2.6.11",
+    "vuetify": "^2.5.10"
   },
   "files": [
     "dist/*",
