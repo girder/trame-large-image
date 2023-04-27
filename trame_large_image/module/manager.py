@@ -1,7 +1,7 @@
 import io
 
-from aiohttp import web
 import large_image
+from aiohttp import web
 from large_image.exceptions import TileSourceXYZRangeError
 from large_image.tilesource import TileSource
 from trame.app import get_server
