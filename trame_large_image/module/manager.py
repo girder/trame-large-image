@@ -62,12 +62,12 @@ class TileSourceManager:
     def _get_source(request):
         try:
             key = request.rel_url.query["tileSource"]
-        except KeyError:
+        except KeyError as e:
             raise web.HTTPNotFound(text=str(e))
 
         try:
             key = int(key)
-        except ValueError as e:
+        except ValueError:
             source = large_image.open(key, projection="EPSG:3857", encoding="PNG")
         else:
             try:
