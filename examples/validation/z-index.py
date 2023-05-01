@@ -1,21 +1,11 @@
-import large_image
 from trame.app import get_server
 from trame.ui.vuetify import SinglePageLayout
 from trame.widgets import leaflet, vuetify
 
-from trame_large_image.widgets import LargeImageLMap, LargeImageLTileLayer
-
 server = get_server()
 state, ctrl = server.state, server.controller
 
-state.trame__title = "Geospatial Large Image Viewer"
-
-
-source = large_image.open(
-    "data/landcover_sample_1000.tif",
-    projection="EPSG:3857",
-    encoding="PNG",
-)
+state.trame__title = "Leaflet Z-Index"
 
 
 with SinglePageLayout(server) as layout:
@@ -23,13 +13,22 @@ with SinglePageLayout(server) as layout:
     layout.title.set_text(state.trame__title)
 
     with layout.toolbar:
-        # really bump it to be above leaflet tile layer
-        layout.toolbar.style = "z-index: 1000;"
+        layout.toolbar.style = "z-index: 2;"
+
+        vuetify.VSpacer()
+
+        vuetify.VSelect(
+            v_model=("table_name", "table 1"),
+            items=("table_names", ["table 1", "table 2", "table 3", "table 4"]),
+            dense=True,
+            hide_details=True,
+            style="max-width: 200px;",
+        )
 
     # Main content
     with layout.content:
         with vuetify.VContainer(fluid=True, classes="pa-0 fill-height"):
-            with LargeImageLMap(tile_source=source):
+            with leaflet.LMap(zoom=3, style="z-index: 0;"):
                 leaflet.LTileLayer(
                     url=(
                         "basemap_url",
@@ -40,7 +39,6 @@ with SinglePageLayout(server) as layout:
                         '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
                     ),
                 )
-                LargeImageLTileLayer(tile_source=source)
 
     # Footer
     layout.footer.hide()

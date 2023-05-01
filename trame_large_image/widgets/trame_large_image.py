@@ -1,10 +1,11 @@
 import json
 
+from large_image.tilesource import TileSource
 from trame.widgets import leaflet
 from trame_client.widgets.core import AbstractElement
 
 from .. import module
-from ..module.tiler import Tiler
+from ..module.manager import add_routes, register
 
 
 def bounds(source, srs="EPSG:4326"):
@@ -19,53 +20,65 @@ def center(source, srs="EPSG:4326"):
     )
 
 
-def _post_init_register_routes(instance, routes):
-    @instance._server.controller.add("on_server_bind")
-    def _(wslink_server):
-        """Add our custom REST endpoints to the trame server."""
-        wslink_server.app.add_routes(routes)
-
-
 class HtmlElement(AbstractElement):
     def __init__(self, _elem_name, children=None, **kwargs):
         super().__init__(_elem_name, children, **kwargs)
         if self.server:
             self.server.enable_module(module)
+            add_routes(self.server)
 
 
-# Expose your vue component(s)
 class GeoJSViewer(HtmlElement):
     def __init__(self, tile_source, **kwargs):
-        self._tiler = Tiler(tile_source)
-
+        if isinstance(tile_source, TileSource):
+            tile_source = register(tile_source)
         super().__init__(
             "geo-js-viewer",
-            tile_url=self._tiler.tile_url,
+            tile_source=tile_source,
+            # TODO: support metadata with reference key
             metadata=json.dumps(tile_source.getMetadata()).replace('"', "'"),
             **kwargs,
         )
         self._attr_names += [
-            ("tile_url", "tileURL"),
+            ("tile_source", "tileSource"),
             "metadata",
         ]
-        # self._event_names += [
-        #     "click",
-        #     "change",
-        # ]
-
-        _post_init_register_routes(self, self._tiler.routes)
 
 
-class LargeImageLeafletTileLayer(leaflet.LTileLayer):
+class LargeImageLTileLayer(HtmlElement):
     def __init__(self, tile_source, **kwargs):
-        self._tiler = Tiler(tile_source)
+        if isinstance(tile_source, TileSource):
+            tile_source = register(tile_source)
+        super().__init__(
+            "large-image-l-tile-layer",
+            tile_source=tile_source,
+            **kwargs,
+        )
+        self._attr_names += [
+            ("tile_source", "tileSource"),
+            ("tile_layer_class", "tileLayerClass"),
+            # "bounds",
+        ]
+        # Inherited leaflet props
+        self._attr_names += [
+            "pane",
+            "attribution",
+            "name",
+            ("layer_type", "layerType"),
+            "visible",
+            "opacity",
+            ("z_index", "zIndex"),
+            ("tile_size", "tileSize"),
+            ("no_wrap", "noWrap"),
+            "tms",
+            "subdomains",
+            ("detect_retina", "detectRetina"),
+            "options",
+        ]
+        self._event_names += [("update_visible", "update:visible"), "ready"]
 
-        super().__init__(url=("tile_url", self._tiler.tile_url), **kwargs)
 
-        _post_init_register_routes(self, self._tiler.routes)
-
-
-class LargeImageLeafletMap(leaflet.LMap):
+class LargeImageLMap(leaflet.LMap):
     def __init__(self, tile_source, **kwargs):
         m = tile_source.getMetadata()
         try:
