@@ -56,7 +56,26 @@ class LargeImageLTileLayer(HtmlElement):
         )
         self._attr_names += [
             ("tile_source", "tileSource"),
+            ("tile_layer_class", "tileLayerClass"),
+            # "bounds",
         ]
+        # Inherited leaflet props
+        self._attr_names += [
+            "pane",
+            "attribution",
+            "name",
+            ("layer_type", "layerType"),
+            "visible",
+            "opacity",
+            ("z_index", "zIndex"),
+            ("tile_size", "tileSize"),
+            ("no_wrap", "noWrap"),
+            "tms",
+            "subdomains",
+            ("detect_retina", "detectRetina"),
+            "options",
+        ]
+        self._event_names += [("update_visible", "update:visible"), "ready"]
 
 
 class LargeImageLMap(leaflet.LMap):
